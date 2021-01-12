@@ -79,7 +79,7 @@
 #include "red-stream-device.h"
 
 #define REDS_MAX_STAT_NODES 100
-
+//server通过使用VDI接口与QEMU交互,编译成libspice库
 static void reds_client_monitors_config(RedsState *reds, VDAgentMonitorsConfig *monitors_config);
 static gboolean reds_use_client_monitors_config(RedsState *reds);
 static void reds_set_video_codecs(RedsState *reds, GArray *video_codecs);
@@ -97,7 +97,7 @@ static GList *servers = NULL;
 static pthread_mutex_t global_reds_lock = PTHREAD_MUTEX_INITIALIZER;
 
 /* SPICE configuration set through the public spice_server_set_xxx APIS */
-struct RedServerConfig {
+struct RedServerConfig {//存储server端的配置
     RedsMigSpice *mig_spice;
 
     int default_channel_security;
@@ -256,7 +256,7 @@ void reds_handle_channel_event(RedsState *reds, int event, SpiceChannelEventInfo
     }
 }
 
-static void reds_link_free(RedLinkInfo *link)
+static void reds_link_free(RedLinkInfo *link)//释放一个连接
 {
     red_stream_free(link->stream);
     link->stream = NULL;
@@ -276,7 +276,7 @@ static void reds_link_free(RedLinkInfo *link)
 }
 
 #ifdef RED_STATISTICS
-
+//统计相关的，由这个宏控制
 void stat_init_node(RedStatNode *node, SpiceServer *reds, const RedStatNode *parent,
                     const char *name, int visible)
 {
@@ -309,7 +309,7 @@ void stat_remove_counter(SpiceServer *reds, RedStatCounter *counter)
 }
 
 #endif
-
+//感觉命名不太统一，一会注册，一会又是free连接，其实意思相同
 void reds_register_channel(RedsState *reds, RedChannel *channel)
 {
     spice_assert(reds);
@@ -330,7 +330,7 @@ void reds_unregister_channel(RedsState *reds, RedChannel *channel)
 {
     reds->channels.remove(red::shared_ptr<RedChannel>(channel));
 }
-
+//使用数组来存放channel的id
 RedChannel *reds_find_channel(RedsState *reds, uint32_t type, uint32_t id)
 {
     for (auto channel: reds->channels) {
@@ -573,7 +573,7 @@ SpiceMouseMode reds_get_mouse_mode(RedsState *reds)
     return reds->mouse_mode;
 }
 
-static void reds_set_mouse_mode(RedsState *reds, SpiceMouseMode mode)
+static void reds_set_mouse_mode(RedsState *reds, SpiceMouseMode mode)//总共两种模式，服务端和客户端
 {
     if (reds->mouse_mode == mode) {
         return;
@@ -3422,7 +3422,7 @@ err:
     reds_cleanup_net(reds);
     return -1;
 }
-
+//看如下是不支持h265，gstreamer是一个基于pipeline的多媒体框架
 static const char default_renderer[] = "sw";
 #if defined(HAVE_GSTREAMER_1_0) || defined(HAVE_GSTREAMER_0_10)
 #define GSTREAMER_CODECS "gstreamer:mjpeg;gstreamer:h264;gstreamer:vp8;gstreamer:vp9;"
@@ -3432,7 +3432,7 @@ static const char default_renderer[] = "sw";
 static const char default_video_codecs[] = "spice:mjpeg;" GSTREAMER_CODECS;
 
 /* new interface */
-SPICE_GNUC_VISIBLE SpiceServer *spice_server_new(void)
+SPICE_GNUC_VISIBLE SpiceServer *spice_server_new(void)//SpiceServer就是reds
 {
     const char *record_filename;
     RedsState *reds = new RedsState;
