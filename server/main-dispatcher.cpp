@@ -46,7 +46,7 @@
  * main_dispatcher_handle_<event_name> - handler for callback from main thread
  *   seperate from self because it may send an ack or do other work in the future.
  */
-
+//在qemu线程中监听socket事件,处理客户端连接的初始化,建立和断开等,跟MainChannel相关
 enum {
     MAIN_DISPATCHER_CHANNEL_EVENT = 0,
     MAIN_DISPATCHER_MIGRATE_SEAMLESS_DST_COMPLETE,
@@ -73,7 +73,7 @@ typedef struct MainDispatcherMmTimeLatencyMessage {
 typedef struct MainDispatcherClientDisconnectMessage {
     RedClient *client;
 } MainDispatcherClientDisconnectMessage;
-
+//MainDispatcher 中注册这些hander，main_dispatcher_handle_channel_event以及migrate_complete，mm_time_latency，client_disconnect
 /* channel_event - calls core->channel_event, must be done in main thread */
 static void main_dispatcher_handle_channel_event(void *opaque,
                                                  void *payload)
